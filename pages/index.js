@@ -4,6 +4,7 @@ import styles from "./index.module.css";
 
 export default function Home() {
   const [animalInput, setAnimalInput] = useState("");
+  const [apiKeyInput, setapiKeyInput] = useState("");
   const [result, setResult] = useState();
 
   async function onSubmit(event) {
@@ -14,7 +15,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ animal: animalInput }),
+        body: JSON.stringify({ animal: animalInput, apiKey: apiKeyInput }),
       });
 
       const data = await response.json();
@@ -24,6 +25,8 @@ export default function Home() {
 
       setResult(data.result);
       setAnimalInput("");
+      setapiKeyInput("");
+      
     } catch(error) {
       // Consider implementing your own error handling logic here
       console.error(error);
@@ -42,12 +45,22 @@ export default function Home() {
         <img src="/dog.png" className={styles.icon} />
         <h3>Name my pet</h3>
         <form onSubmit={onSubmit}>
+          <label>Animal</label>
           <input
             type="text"
             name="animal"
             placeholder="Enter an animal"
             value={animalInput}
             onChange={(e) => setAnimalInput(e.target.value)}
+          />
+          <label>API Key</label>
+          <input
+            type="password"
+            name="apikey"
+            label="API Key"
+            placeholder="Enter your API key"
+            value={apiKeyInput}
+            onChange={(e) => setapiKeyInput(e.target.value)}
           />
           <input type="submit" value="Generate names" />
         </form>

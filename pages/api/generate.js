@@ -1,18 +1,27 @@
 import { Configuration, OpenAIApi } from "openai";
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+let client = new OpenAIApi();
 
 export default async function (req, res) {
-  if (!configuration.apiKey) {
+  console.log(req.body.animal)
+  if (!process.env.OPENAI_API_KEY && !req.body.apiKey) {
     res.status(500).json({
       error: {
-        message: "OpenAI API key not configured, please follow instructions in README.md",
+        message: "OpenAI API key not configured, https://beta.openai.com/account/api-keys ",
       }
     });
-    return;
+  }
+  if (req.body.apiKey){
+    const configuration = new Configuration({
+      apiKey: req.body.apiKey,
+    });
+    client = new OpenAIApi(configuration)
+  }
+  if (process.env.OPENAI_API_KEY){
+    const configuration = new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    client = new OpenAIApi(configuration)
   }
 
   const animal = req.body.animal || '';
@@ -24,9 +33,8 @@ export default async function (req, res) {
     });
     return;
   }
-
   try {
-    const completion = await openai.createCompletion({
+    const completion = await client.createCompletion({
       model: "text-davinci-003",
       prompt: generatePrompt(animal),
       temperature: 0.6,
@@ -47,7 +55,6 @@ export default async function (req, res) {
     }
   }
 }
-
 function generatePrompt(animal) {
   const capitalizedAnimal =
     animal[0].toUpperCase() + animal.slice(1).toLowerCase();
