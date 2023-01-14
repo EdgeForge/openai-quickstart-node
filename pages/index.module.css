@@ -65,3 +65,8 @@
   font-weight: bold;
   margin-top: 40px;
 }
+.main .error {
+  font-weight: bold;
+  margin-top: 40px;
+  color: rgb(248, 3, 3);
+}

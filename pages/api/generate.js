@@ -7,7 +7,7 @@ export default async function (req, res) {
   if (!process.env.OPENAI_API_KEY && !req.body.apiKey) {
     res.status(500).json({
       error: {
-        message: "OpenAI API key not configured, https://beta.openai.com/account/api-keys ",
+        message: 'OpenAI API key not configured. Please set the OPENAI_API_KEY environment variable or pass an apiKey parameter.',
       }
     });
   }
