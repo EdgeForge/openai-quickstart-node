@@ -2,7 +2,7 @@
 FROM node:lts
 
 # envs
-ENV NPM_VERSION=9.3.0
+ENV NPM_VERSION=9.3.1
 
 # Create a working directory
 RUN mkdir -p /usr/src/app
@@ -26,10 +26,15 @@ COPY . /usr/src/app
 RUN npm run build
 
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#non-root-user
-RUN npm cache clean --force && \
-    mkdir -p /.npm && \
-    chown -R 15444:15444 /.npm 
+# clear npm cache
+RUN npm cache clean --force
+
+# set user to node
 USER node
+
+# ensure config cache is not in root dir
+RUN npm config set cache $npm_config_cache
+
 # Expose the application's port
 EXPOSE 3000
 
