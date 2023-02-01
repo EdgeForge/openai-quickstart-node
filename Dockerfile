@@ -14,13 +14,16 @@ WORKDIR /usr/src/app
 COPY package*.json /usr/src/app/
 
 # update npm
-RUN npm install -g npm@$NPM_VERSION
+RUN npm install -g npm@$NPM_VERSION --unsafe-perm
 
 # Install the dependencies
-RUN npm install
+RUN npm install --unsafe-perm
 
 # Copy the rest of the application code
 COPY . /usr/src/app
+
+# Fix the permissions issue with XC
+RUN npm config set unsafe-perm true
 
 # If you are building your code for production
 RUN npm run build
