@@ -22,9 +22,6 @@ RUN npm install --unsafe-perm
 # Copy the rest of the application code
 COPY . /usr/src/app
 
-# Fix the permissions issue with XC
-RUN npm config set unsafe-perm true
-
 # If you are building your code for production
 RUN npm run build
 
