@@ -27,7 +27,7 @@ RUN npm run build
 
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#non-root-user
 # clear npm cache
-# RUN npm cache clean --force
+RUN npm cache clean --force
 
 # set user to node
 USER node
