@@ -14,10 +14,10 @@ WORKDIR /usr/src/app
 COPY package*.json /usr/src/app/
 
 # update npm
-RUN npm install -g npm@$NPM_VERSION --unsafe-perm
+RUN npm install -g npm@$NPM_VERSION
 
 # Install the dependencies
-RUN npm install --unsafe-perm
+RUN npm install
 
 # Copy the rest of the application code
 COPY . /usr/src/app
@@ -27,13 +27,13 @@ RUN npm run build
 
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#non-root-user
 # clear npm cache
-RUN npm cache clean --force
+# RUN npm cache clean --force
 
 # set user to node
 USER node
 
 # ensure config cache is not in root dir
-RUN npm config set cache $npm_config_cache
+# RUN npm config set cache $npm_config_cache
 
 # Expose the application's port
 EXPOSE 3000
