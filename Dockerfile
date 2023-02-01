@@ -1,42 +1,27 @@
-# soruce images
-FROM node:lts
+# ---- base ----
+FROM alpine AS base
 
-# envs
-ENV NPM_VERSION=9.3.1
-
-# Create a working directory
+RUN apk add --no-cache nodejs npm tini
 RUN mkdir -p /usr/src/app
-
-# Set the working directory
 WORKDIR /usr/src/app
+ENTRYPOINT ["/sbin/tini", "--"]
+COPY package.json /usr/src/app
 
-# Copy the package.json and package-lock.json files
-COPY package*.json /usr/src/app/
-
-# update npm
-RUN npm install -g npm@$NPM_VERSION
-
-# Install the dependencies
+# ---- Dependencies ----
+FROM base as dependencies
+RUN npm set progress=false && npm config set depth 0
+RUN npm install --only=production
+RUN cp -R node_modules prod_node_modules
 RUN npm install
 
-# Copy the rest of the application code
+# ---- Test ----
+FROM dependencies AS test
 COPY . /usr/src/app
-
-# If you are building your code for production
 RUN npm run build
 
-# https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#non-root-user
-# clear npm cache
-RUN npm cache clean --force
-
-# set user to node
-USER node
-
-# ensure config cache is not in root dir
-# RUN npm config set cache $npm_config_cache
-
-# Expose the application's port
+# ---- Release ----
+FROM base AS release
+COPY --from=dependencies /usr/src/app/prod_node_modules /usr/src/app/node_modules
+COPY . /usr/src/app
 EXPOSE 3000
-
-# Run the application
-CMD [ "npm", "run", "start" ]
+CMD npm run start
